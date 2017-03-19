@@ -4,4 +4,5 @@ import Lib
 import Control.Monad
 
 main :: IO ()
-main = forever parse
+main =
+	parse initMap
