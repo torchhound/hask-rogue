@@ -2,7 +2,9 @@ module Main where
 
 import Lib
 import Control.Monad
+import System.Random
 
 main :: IO ()
-main =
-	parse initMap
+main = do
+    gen <- getStdGen
+    parse (initMap 20 20 20 [] gen)
