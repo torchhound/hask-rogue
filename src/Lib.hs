@@ -1,8 +1,9 @@
 module Lib
   ( parse,
-    initMap,
     randomInt,
-    PlayerPosition(PlayerPosition)
+    initMap,
+    PlayerPosition(PlayerPosition),
+    replaceXY
   ) where
 
 import System.Random
@@ -18,6 +19,14 @@ initMap x y xConst map line gen
   | y > 0 = let (rand, newGen) = (randomInt gen 20)
             in initMap (x - 1) y xConst map ((if rand >= 10 then '#' else '.'):line) newGen
   | y == 0 = map
+
+replaceXY :: Int -> Int -> Char -> [[Char]] -> [[Char]]
+replaceXY x y new map =
+  let row = map!!y
+      (rhd, rtl) = splitAt x row
+      newRow = rhd ++ (new:(tail rtl))
+      (mhd, mtl) = splitAt y map
+  in return (mhd!!0:(newRow:(tail mtl)))!!0
 
 parse :: [[Char]] -> PlayerPosition -> IO ()
 parse map pp = do
