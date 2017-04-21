@@ -1,10 +1,13 @@
 module Lib
   ( parse,
     initMap,
-    randomInt
+    randomInt,
+    PlayerPosition(PlayerPosition)
   ) where
 
 import System.Random
+
+data PlayerPosition = PlayerPosition (Int, Int) deriving(Eq, Show)
 
 randomInt :: StdGen -> Int -> (Int, StdGen)
 randomInt gen mx = (randomR (1, mx) gen) 
@@ -16,9 +19,14 @@ initMap x y xConst map line gen
             in initMap (x - 1) y xConst map ((if rand >= 10 then '#' else '.'):line) newGen
   | y == 0 = map
 
-parse :: [[Char]] -> IO ()
-parse map = do
+parse :: [[Char]] -> PlayerPosition -> IO ()
+parse map pp = do
   line <- getLine
-  putStrLn line
+  case line of
+    "n" -> print $ "North"
+    "s" -> print $ "South"
+    "e" -> print $ "East"
+    "w" -> print $ "West"
+    _ -> print $ "Invalid Input"
   (mapM print map)
-  parse map
+  parse map pp
