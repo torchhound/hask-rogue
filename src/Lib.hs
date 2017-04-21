@@ -7,13 +7,11 @@ module Lib
 import System.Random
 
 randomInt :: StdGen -> Int -> (Int, StdGen)
-randomInt gen mx = 
-  (randomR (1, mx) gen) 
+randomInt gen mx = (randomR (1, mx) gen) 
 
 initMap :: Int -> Int -> Int -> [[Char]] -> [Char] -> StdGen -> [[Char]]
 initMap x y xConst map line gen
-  | x == 0 = let (rand, newGen) = (randomInt gen 20) 
-             in initMap xConst (y - 1) xConst (line:map) ((if rand >= 10 then '#' else '.'):[]) newGen
+  | x == 0 = initMap xConst (y - 1) xConst (line:map) [] gen
   | y > 0 = let (rand, newGen) = (randomInt gen 20)
             in initMap (x - 1) y xConst map ((if rand >= 10 then '#' else '.'):line) newGen
   | y == 0 = map
