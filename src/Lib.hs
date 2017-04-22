@@ -8,7 +8,7 @@ module Lib
 
 import System.Random
 
-data PlayerPosition = PlayerPosition (Int, Int) deriving(Eq, Show)
+data PlayerPosition = PlayerPosition {ppx :: Int, ppy :: Int} deriving(Show)
 
 randomInt :: StdGen -> Int -> (Int, StdGen)
 randomInt gen mx = (randomR (1, mx) gen) 
@@ -37,5 +37,6 @@ parse map pp = do
     "e" -> print $ "East"
     "w" -> print $ "West"
     _ -> print $ "Invalid Input"
-  (mapM print map)
-  parse map pp
+  let newMap = (replaceXY (ppx pp) (ppy pp) '*' map)
+  (mapM print newMap)
+  parse newMap pp
