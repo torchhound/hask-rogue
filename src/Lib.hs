@@ -26,7 +26,7 @@ replaceXY x y new map =
       (rhd, rtl) = splitAt x row
       newRow = rhd ++ (new:(tail rtl))
       (mhd, mtl) = splitAt y map
-  in return (mhd!!0:(newRow:(tail mtl)))!!0
+  in mhd ++ (newRow:(tail mtl))
 
 parse :: [[Char]] -> PlayerPosition -> IO ()
 parse map pp = do
