@@ -30,13 +30,20 @@ replaceXY x y new map =
 
 parse :: [[Char]] -> PlayerPosition -> IO ()
 parse map pp = do
+  print pp
   line <- getLine
-  case line of
-    "n" -> print $ "North"
-    "s" -> print $ "South"
-    "e" -> print $ "East"
-    "w" -> print $ "West"
-    _ -> print $ "Invalid Input"
-  let newMap = (replaceXY (ppx pp) (ppy pp) '*' map)
+  newPP <- case line of
+    "n" -> do print $ "North"
+              return (if (ppx pp) /= 0 then (PlayerPosition (ppx pp) ((ppy pp) - 1)) else pp)
+    "s" -> do print $ "South"
+              return (if (ppx pp) < 20 then (PlayerPosition (ppx pp) ((ppy pp) + 1)) else pp)
+    "e" -> do print $ "East"
+              return (if (ppx pp) < 20 then (PlayerPosition ((ppx pp) + 1) (ppy pp)) else pp)
+    "w" -> do print $ "West"
+              return (if (ppx pp) /= 0 then (PlayerPosition ((ppx pp) - 1) (ppy pp)) else pp)
+    _ -> do print $ "Invalid Input"
+            return pp
+  print newPP
+  let newMap = (replaceXY (ppx newPP) (ppy newPP) '*' map)
   (mapM print newMap)
-  parse newMap pp
+  parse newMap newPP
