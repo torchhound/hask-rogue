@@ -7,4 +7,4 @@ import System.Random
 main :: IO ()
 main = do
     gen <- getStdGen
-    parse (initMap 20 20 20 [] [] gen) (PlayerPosition 0 0)
+    parse (initMap 20 20 20 [] [] gen) (PlayerPosition 0 0) '.'

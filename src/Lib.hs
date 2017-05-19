@@ -28,9 +28,13 @@ replaceXY x y new map =
       (mhd, mtl) = splitAt y map
   in mhd ++ (newRow:(tail mtl))
 
-parse :: [[Char]] -> PlayerPosition -> IO ()
-parse map pp = do
-  print pp
+getXY :: Int -> Int -> [[Char]] -> Char
+getXY x y map =
+  let row = map!!y
+  in row!!x
+
+parse :: [[Char]] -> PlayerPosition -> Char -> IO ()
+parse map pp olderPP = do
   line <- getLine
   newPP <- case line of
     "n" -> do print $ "North"
@@ -43,7 +47,8 @@ parse map pp = do
               return (if (ppx pp) /= 0 then (PlayerPosition ((ppx pp) - 1) (ppy pp)) else pp)
     _ -> do print $ "Invalid Input"
             return pp
-  print newPP
-  let newMap = (replaceXY (ppx newPP) (ppy newPP) '*' map)
+  let oldMap = (replaceXY (ppx pp) (ppy pp) olderPP map)
+  let oldPP = (getXY (ppx newPP) (ppy newPP) map)
+  let newMap = (replaceXY (ppx newPP) (ppy newPP) '*' oldMap)
   (mapM print newMap)
-  parse newMap newPP
+  parse newMap newPP oldPP
