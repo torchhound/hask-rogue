@@ -17,7 +17,7 @@ initMap :: Int -> Int -> Int -> [[Char]] -> [Char] -> StdGen -> [[Char]]
 initMap x y xConst map line gen
   | x == 0 = initMap xConst (y - 1) xConst (line:map) [] gen
   | y > 0 = let (rand, newGen) = (randomInt gen 20)
-            in initMap (x - 1) y xConst map ((if rand >= 10 then '#' else '.'):line) newGen
+            in initMap (x - 1) y xConst map ((if rand >= 16 then '#' else '.'):line) newGen
   | y == 0 = map
 
 replaceXY :: Int -> Int -> Char -> [[Char]] -> [[Char]]
@@ -47,8 +47,15 @@ parse map pp olderPP = do
               return (if (ppx pp) /= 0 then (PlayerPosition ((ppx pp) - 1) (ppy pp)) else pp)
     _ -> do print $ "Invalid Input"
             return pp
-  let oldMap = (replaceXY (ppx pp) (ppy pp) olderPP map)
-  let oldPP = (getXY (ppx newPP) (ppy newPP) map)
-  let newMap = (replaceXY (ppx newPP) (ppy newPP) '*' oldMap)
-  (mapM print newMap)
-  parse newMap newPP oldPP
+  if (getXY (ppx newPP) (ppy newPP) map) == '#'
+    then 
+      do
+        print $ "That's a wall!"
+        parse map pp olderPP
+    else
+      do
+        let oldMap = (replaceXY (ppx pp) (ppy pp) olderPP map)
+        let oldPP = (getXY (ppx newPP) (ppy newPP) map)
+        let newMap = (replaceXY (ppx newPP) (ppy newPP) '*' oldMap)
+        (mapM print newMap)
+        parse newMap newPP oldPP
