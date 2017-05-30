@@ -7,6 +7,7 @@ module Lib
   ) where
 
 import System.Random
+import System.Exit
 
 data PlayerPosition = PlayerPosition {ppx :: Int, ppy :: Int} deriving(Show)
 
@@ -17,7 +18,7 @@ initMap :: Int -> Int -> Int -> [[Char]] -> [Char] -> StdGen -> [[Char]]
 initMap x y xConst map line gen
   | x == 0 = initMap xConst (y - 1) xConst (line:map) [] gen
   | y > 0 = let (rand, newGen) = (randomInt gen 20)
-            in initMap (x - 1) y xConst map ((if rand >= 16 then '#' else '.'):line) newGen
+            in initMap (x - 1) y xConst map ((if rand >= 16 then '#' else if rand == 15 then 'E' else '.'):line) newGen
   | y == 0 = map
 
 replaceXY :: Int -> Int -> Char -> [[Char]] -> [[Char]]
@@ -33,8 +34,9 @@ getXY x y map =
   let row = map!!y
   in row!!x
 
-parse :: [[Char]] -> PlayerPosition -> Char -> IO ()
-parse map pp olderPP = do
+parse :: [[Char]] -> PlayerPosition -> Char -> StdGen -> IO ()
+parse map pp olderPP gen = do
+  let (rand, newGen) = (randomInt gen 20)
   line <- getLine
   newPP <- case line of
     "n" -> do print $ "North"
@@ -51,11 +53,21 @@ parse map pp olderPP = do
     then 
       do
         print $ "That's a wall!"
-        parse map pp olderPP
-    else
-      do
-        let oldMap = (replaceXY (ppx pp) (ppy pp) olderPP map)
-        let oldPP = (getXY (ppx newPP) (ppy newPP) map)
-        let newMap = (replaceXY (ppx newPP) (ppy newPP) '*' oldMap)
-        (mapM print newMap)
-        parse newMap newPP oldPP
+        parse map pp olderPP newGen
+    else if (getXY (ppx newPP) (ppy newPP) map) == 'E'
+      then
+        do
+          if rand > 10 
+            then
+              do
+                print $ "Enemy defeated!" 
+                let enemyMap = (replaceXY (ppx newPP) (ppy newPP) '.' map)
+                parse enemyMap pp olderPP newGen
+            else die $ "You lose..."
+      else
+        do
+          let oldMap = (replaceXY (ppx pp) (ppy pp) olderPP map)
+          let oldPP = (getXY (ppx newPP) (ppy newPP) map)
+          let newMap = (replaceXY (ppx newPP) (ppy newPP) 'P' oldMap)
+          (mapM print newMap)
+          parse newMap newPP oldPP newGen
